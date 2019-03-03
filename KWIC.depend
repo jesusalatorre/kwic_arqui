@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1551628282 source:c:\users\jesus\documents\epi\kwic\main.cpp
+	<iostream>
+	"KWICMachine.h"
+
+1551631941 c:\users\jesus\documents\epi\kwic\kwicmachine.h
+	<vector>
+	<string>
+	<iostream>
+	<stdio.h>
+	<bits/stdc++.h>
+
