@@ -11,12 +11,12 @@ using namespace std;
 class KWICMachine{
 private:
     int input_size;
-    string sentence;
     vector<string> input;
 
 
 public:
     KWICMachine(){
+        string sentence;
         cout << "Ingresa la cantidad de oraciones a procesar: " << endl;
         cin >> input_size;
 
