@@ -15,7 +15,6 @@ private:
     string sentence;
     vector<string> input;
     vector<string> stop_words;
-    vector<string> output;
     char option;
 
 
@@ -36,10 +35,8 @@ public:
 
         orderHandler();
 
-        generateOutput();
 
-        sentenceRemoval();
-        displayFinal();
+
     }
 
     void getSentences(){
@@ -59,17 +56,16 @@ public:
         }
     }
 
-    void displayFinal(){
-        cout << endl << endl << "El resultado final es: " << endl << endl;
-        for(int i=1; i<input.size(); i++){
-            cout << input[i] << endl;
+
+    void printIncreasing(){
+        for(vector<string>::iterator it=input.begin(); it!=input.end(); ++it){
+            cout << *it << endl;
         }
     }
 
-    void generateOutput(){
-        input.clear();
-        for(int i=1; i<output.size(); i++){
-            input.push_back(output[i]);
+    void printDecreasing(){
+        for(vector<string>::iterator it=input.end()-1; it!=input.begin(); --it){
+            cout << *it << endl;
         }
     }
 
@@ -82,15 +78,16 @@ public:
 
             if(option=='I'){
                 cout << endl << "Elegiste ordenamiento incremental" << endl;
-                for(int i=1; i<input.size(); i++){
-                output.push_back(input[i]);
-                }
+
+                sentenceRemoval();
+                printIncreasing();
+
             }
             if(option=='D'){
                 cout << endl << "Elegiste ordenamiento decremental" << endl;
-                for(int i=input.size()-1; i>0; i--){
-                output.push_back(input[i]);
-                }
+
+                sentenceRemoval();
+                printDecreasing();
             }
         }
     }
