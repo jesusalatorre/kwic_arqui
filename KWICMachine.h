@@ -26,10 +26,10 @@ public:
 
         if(input_size>0){
 
-            sentenceRemoval(0);
+            sentenceRemoval();
 
             defineStops();
-            if(stop_size > 0){
+            if(stop_size>0){
                 removeStops();
                 cleanSpaces();
             }
@@ -40,9 +40,11 @@ public:
 
             orderHandler();
         }
+
     }
 
     void getSentences(){
+        cout << "tamaño del vector es " << input.size() << endl;
      cout << "Ingresa la cantidad de oraciones a procesar: " << endl;
         cin >> input_size;
 
@@ -52,11 +54,14 @@ public:
             getline(cin, sentence);
             input.push_back(prepareString(sentence));
         }
+        recenter();
+        cout << "tamaño del vector es " << input.size() << endl;
         }
     }
 
     void rotater(){
-        for(int i=1; i<=input_size; i++){
+        for(int i=0; i<input_size; i++){
+                cout << "rotating " << input[i] << endl;
             createRotations(input[i]);
         }
     }
@@ -73,114 +78,125 @@ public:
 
     void orderHandler(){
         cout << endl << "Si desea que el ordenamiento sea INCREMENTAL, ingrese 'I' " << endl;
-        cout << "Si desea que el ordenamiento sea DECREMENTAL, ingrese 'D' " << endl;
-        while(option!='I' && option!='D'){
-            cout << "Elija un tipo de ordenamiento (I/D): " << endl;
-            cin >> option;
+        cout << "Si desea que el ordenamiento sea DECREMENTAL, ingrese 'D' " << endl << endl;
+
+        cout << "Elija un tipo de ordenamiento (I/D): " << endl;
+        cin >> option;
+
 
             if(option=='I'){
                 cout << endl << "Elegiste ordenamiento incremental" << endl;
 
-                sentenceRemoval(1);
+                sentenceRemoval();
 
             }
             if(option=='D'){
                 cout << endl << "Elegiste ordenamiento decremental" << endl;
 
                 reverse(input.begin(), input.end());
-                sentenceRemoval(1);
-
+                sentenceRemoval();
             }
-            printResult();
-        }
+            else{
+                cout << "Eleccion no reconocida, ordenando de manera incremental..." << endl;
+                sentenceRemoval();
+            }
+
+         printResult();
     }
 
     void defineStops(){
-        cout << "Ingresa la cantidad de 'stop words' deseadas: " << endl;
+        cout << "Ingresa la cantidad de 'stop words' a borrar de las oraciones: " << endl;
         cin >> stop_size;
 
-        if(stop_size > 0){
+        if(stop_size>0){
             cout << "Ingresa la(s) " << stop_size << " stop word(s) que deseas:" << endl;
             for(int i=0; i<=stop_size; i++){
                 getline(cin, sentence);
-                stop_words.push_back(prepareString(sentence));
+                stop_words.push_back(prepareString(cleanStop(sentence)));
             }
         }
     }
 
-    void sentenceRemoval(int round){
+    void sentenceRemoval(){
         int deleter;
         cout << endl << "Si deseas quitar una oracion de la lista, ingresa su numero. " << endl;
         cout << "Si no deseas quitar nada, o ya acabaste de quitarlas, ingresa 0: " << endl;
 
-        if(round==0){
-        displayFirstList();
-        }
-        if(round==1){
-            displaySecondList();
-        }
+        displayList();
         cin >> deleter;
         while(deleter!=0){
-            if(deleter>=input.size() || deleter<0){
-                cout << endl << "Seleccion fuera de rango, solo hay " << input.size()-1 << " oraciones." << endl;
+            if(deleter>input.size() || deleter<0){
+                cout << endl << "Seleccion fuera de rango, solo hay " << input.size() << " oraciones." << endl;
             }
             else{
                 cout << endl <<"Eliminando oracion #" << deleter << endl;
                 delSentence(deleter);
             }
-        if(round==0){
-        displayFirstList();
-        }
-        if(round==1){
-            displaySecondList();
-        }
+            displayList();
             cin >> deleter;
         }
     }
 
     void delSentence(int choice){
         vector<string>::iterator it;
-        it = input.begin()+choice;
+        it = input.begin()+choice-1;
         input.erase(it);
         input_size--;
     }
 
-    void displayFirstList(){
+    void displayList(){
         int i=1;
         cout << endl << "-------------------------------------------" << endl;
-        for( vector<string>::iterator it=input.begin()+1; it!=input.end(); it++){
-            cout << "#" << i << "   " << *it << endl;
-            i++;
-        }
-        cout << "-------------------------------------------" << endl;
-    }
-        void displaySecondList(){
-        int i=1;
-        cout << endl << "-------------------------------------------" << endl;
-        for( vector<string>::iterator it=input.begin(); it!=input.end()-1; it++){
+        for( vector<string>::iterator it=input.begin(); it!=input.end(); it++){
             cout << "#" << i << "   " << *it << endl;
             i++;
         }
         cout << "-------------------------------------------" << endl;
     }
 
-    void removeStops(){
+    void recenter(){
+        for( vector<string>::iterator it=input.begin(); it!=input.end(); ++it){
+            string check = *it;
+            if(check.empty()){
+                input.erase(it);
+            }
+        }
+    }
+
+       void removeStops(){
         if(stop_size>0){
-            int length;
-            string space = " ";
+            string lookup;
+            string e;
             for(int i=1; i<=stop_size; i++){
-                length = stop_words[i].length()+1;
-                string stop = stop_words[i].append(space);
-                for(int j=1; j<=input_size; j++){
-                    string searched = input[j].append(space);
-                    size_t found = searched.find(stop);
-                    while(found != string::npos){
-                        input[j].erase(found, length);
-                        found = searched.find(stop_words[i].append(space));
-                    }
+                lookup=stop_words[i];
+                for(int j=0; j<input_size; j++){
+                    e=input[j];
+                    input[j]=eliminate(lookup, e);
                 }
             }
         }
+    }
+
+    string eliminate(string to, string from){
+        string look = " " + to + " ";
+        string result = " " + from + " ";
+        size_t found = result.find(look);
+        while(found != string::npos){
+            result.erase(found, look.length()-1);
+            found = result.find(look);
+        }
+        return result;
+
+    }
+
+    string cleanStop(string stop){
+        string clean;
+        for(int i=0; i<stop.size(); i++){
+            if(stop[i]!=' '){
+                clean+=stop[i];
+            }
+        }
+        return clean;
     }
 
     string clearSpaces(string s){
@@ -199,7 +215,7 @@ public:
     }
 
     void cleanSpaces(){
-        for(int i=1; i<=input_size; i++){
+        for(int i=0; i<input.size(); i++){
             input[i] = clearSpaces(input[i]);
         }
     }
