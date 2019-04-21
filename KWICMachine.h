@@ -23,29 +23,35 @@ public:
     KWICMachine(){
 
         getSentences();
-        sentenceRemoval();
 
-        defineStops();
-        removeStops();
+        if(input_size>0){
 
-        cleanSpaces();
+            sentenceRemoval(0);
 
-        rotater();
+            defineStops();
+            if(stop_size > 0){
+                removeStops();
+                cleanSpaces();
+            }
 
-        sort(input.begin(), input.end());
+            rotater();
 
-        orderHandler();
+            sort(input.begin(), input.end());
 
+            orderHandler();
+        }
     }
 
     void getSentences(){
      cout << "Ingresa la cantidad de oraciones a procesar: " << endl;
         cin >> input_size;
 
+        if(input_size>0){
         cout << "Ingresa las " << input_size << " oraciones a procesar: " << endl;
         for(int i=0; i<=input_size; i++){
             getline(cin, sentence);
             input.push_back(prepareString(sentence));
+        }
         }
     }
 
@@ -75,14 +81,14 @@ public:
             if(option=='I'){
                 cout << endl << "Elegiste ordenamiento incremental" << endl;
 
-                sentenceRemoval();
+                sentenceRemoval(1);
 
             }
             if(option=='D'){
                 cout << endl << "Elegiste ordenamiento decremental" << endl;
 
                 reverse(input.begin(), input.end());
-                sentenceRemoval();
+                sentenceRemoval(1);
 
             }
             printResult();
@@ -94,7 +100,7 @@ public:
         cin >> stop_size;
 
         if(stop_size > 0){
-            cout << "Ingresa las " << stop_size << " stop words que deseas:" << endl;
+            cout << "Ingresa la(s) " << stop_size << " stop word(s) que deseas:" << endl;
             for(int i=0; i<=stop_size; i++){
                 getline(cin, sentence);
                 stop_words.push_back(prepareString(sentence));
@@ -102,25 +108,34 @@ public:
         }
     }
 
-    void sentenceRemoval(){
+    void sentenceRemoval(int round){
         int deleter;
         cout << endl << "Si deseas quitar una oracion de la lista, ingresa su numero. " << endl;
         cout << "Si no deseas quitar nada, o ya acabaste de quitarlas, ingresa 0: " << endl;
-        displayList();
+
+        if(round==0){
+        displayFirstList();
+        }
+        if(round==1){
+            displaySecondList();
+        }
         cin >> deleter;
         while(deleter!=0){
             if(deleter>=input.size() || deleter<0){
-                cout << endl << "Seleccion fuera de rango, solo hay " << input_size << " oraciones." << endl;
+                cout << endl << "Seleccion fuera de rango, solo hay " << input.size()-1 << " oraciones." << endl;
             }
             else{
                 cout << endl <<"Eliminando oracion #" << deleter << endl;
                 delSentence(deleter);
             }
-            displayList();
+        if(round==0){
+        displayFirstList();
+        }
+        if(round==1){
+            displaySecondList();
+        }
             cin >> deleter;
         }
-
-
     }
 
     void delSentence(int choice){
@@ -130,10 +145,19 @@ public:
         input_size--;
     }
 
-    void displayList(){
+    void displayFirstList(){
         int i=1;
         cout << endl << "-------------------------------------------" << endl;
-        for( vector<string>::iterator it=input.begin()+1; it!=input.end(); ++it){
+        for( vector<string>::iterator it=input.begin()+1; it!=input.end(); it++){
+            cout << "#" << i << "   " << *it << endl;
+            i++;
+        }
+        cout << "-------------------------------------------" << endl;
+    }
+        void displaySecondList(){
+        int i=1;
+        cout << endl << "-------------------------------------------" << endl;
+        for( vector<string>::iterator it=input.begin(); it!=input.end()-1; it++){
             cout << "#" << i << "   " << *it << endl;
             i++;
         }
@@ -215,7 +239,6 @@ public:
         string rest;
         string new_rotation=s+" ";
         int count = wordCount(s);
-        input_size = input_size+count-1;
 
         for(int words=1; words<count; words++){
             first_word = new_rotation.substr(0, new_rotation.find(" ")+1);
