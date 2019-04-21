@@ -5,6 +5,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <bits/stdc++.h>
+#include <algorithm>
 
 using namespace std;
 
@@ -35,8 +36,6 @@ public:
 
         orderHandler();
 
-
-
     }
 
     void getSentences(){
@@ -56,18 +55,15 @@ public:
         }
     }
 
-
-    void printIncreasing(){
+    void printResult(){
+         cout << "El resultado final es: " << endl;
+         cout << "-------------------------------------------" << endl;
         for(vector<string>::iterator it=input.begin(); it!=input.end(); ++it){
             cout << *it << endl;
         }
+        cout << "-------------------------------------------" << endl;
     }
 
-    void printDecreasing(){
-        for(vector<string>::iterator it=input.end()-1; it!=input.begin(); --it){
-            cout << *it << endl;
-        }
-    }
 
     void orderHandler(){
         cout << endl << "Si desea que el ordenamiento sea INCREMENTAL, ingrese 'I' " << endl;
@@ -80,15 +76,16 @@ public:
                 cout << endl << "Elegiste ordenamiento incremental" << endl;
 
                 sentenceRemoval();
-                printIncreasing();
 
             }
             if(option=='D'){
                 cout << endl << "Elegiste ordenamiento decremental" << endl;
 
+                reverse(input.begin(), input.end());
                 sentenceRemoval();
-                printDecreasing();
+
             }
+            printResult();
         }
     }
 
@@ -112,8 +109,8 @@ public:
         displayList();
         cin >> deleter;
         while(deleter!=0){
-            if(deleter>input.size() || deleter<0){
-                cout << endl << "Seleccion fuera de rango, solo hay " << input.size() << " oraciones." << endl;
+            if(deleter>=input.size() || deleter<0){
+                cout << endl << "Seleccion fuera de rango, solo hay " << input_size << " oraciones." << endl;
             }
             else{
                 cout << endl <<"Eliminando oracion #" << deleter << endl;
@@ -134,9 +131,11 @@ public:
     }
 
     void displayList(){
+        int i=1;
         cout << endl << "-------------------------------------------" << endl;
-        for(int i=1; i<input.size(); i++){
-            cout << "#" << i << "   " << input[i] << endl;
+        for( vector<string>::iterator it=input.begin()+1; it!=input.end(); ++it){
+            cout << "#" << i << "   " << *it << endl;
+            i++;
         }
         cout << "-------------------------------------------" << endl;
     }
@@ -216,6 +215,7 @@ public:
         string rest;
         string new_rotation=s+" ";
         int count = wordCount(s);
+        input_size = input_size+count-1;
 
         for(int words=1; words<count; words++){
             first_word = new_rotation.substr(0, new_rotation.find(" ")+1);
